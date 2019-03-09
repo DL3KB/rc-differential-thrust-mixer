@@ -12,7 +12,7 @@ const byte r_motor_pin = 10; // Right motor output pin
 
 const int reverse_yaw = -1; // 1 or -1 to reverse the yaw channel. 
 const int yaw_deadband = 20; // ignore this much jitter on yaw channel
-const int mix_strength = .5; // value from 0 (no mix) to 1 (100%) for the mix strength. May eventually set this value from another switch/channel on the receiver
+const int mix_strength = 0.5; // value from 0 (no mix) to 1 (100%) for the mix strength. May eventually set this value from another switch/channel on the receiver
 
 /* Optional WS2812 LED Driver for marker strobes */
 #define LED_PIN 4 // pin that the WS2812s are plugged into. Comment out to disable LEDs all together
