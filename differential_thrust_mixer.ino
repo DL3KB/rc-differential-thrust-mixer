@@ -1,5 +1,4 @@
 #include <Servo.h>
-#include <Adafruit_NeoPixel.h>
 
 /* Begin configuration settings */
 const int min_command = 1000; // The minimum signal to be sent to the ESC
@@ -12,30 +11,14 @@ const byte r_motor_pin = 10; // Right motor output pin
 
 const int reverse_yaw = -1; // 1 or -1 to reverse the yaw channel. 
 const int yaw_deadband = 20; // ignore this much jitter on yaw channel
-const int mix_strength = .5; // value from 0 (no mix) to 1 (100%) for the mix strength. May eventually set this value from another switch/channel on the receiver
-
-/* Optional WS2812 LED Driver for marker strobes */
-#define LED_PIN 4 // pin that the WS2812s are plugged into. Comment out to disable LEDs all together
-
-/* End configuration */
+const float mix_strength = 0.5; // value from 0 (no mix) to 1 (100%) for the mix strength. May eventually set this value from another switch/channel on the receiver
 
 
-#define NUM_PIXELS 6 // Can't be changed right now. First two lights are green (starboard), second two are red (port), third two are white (tail)
 
-int throttle, yaw, modifyer = 1000;
-float yaw_pct;
+int throttle, yaw = 1000;
+float yaw_pct, modifyer = 0;
 
 Servo l_motor, r_motor;
-
-#ifdef LED_PIN
-  Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
-#endif
-
-int framecounter = 0;
-int frames_to_wait = 1000; // number of loops to wait before flashing the strobes
-
-//int last_g_flash = 0;
-//int last_r_flash = 0;
 
 
 void setup() {
@@ -48,16 +31,7 @@ void setup() {
   r_motor.attach(r_motor_pin);
 
 
-/* Optional WS2812 LEDs */
-#ifdef LED_PIN
-  pixels.begin();
-  pixels.setPixelColor(0, pixels.Color(0,255,0));
-  pixels.setPixelColor(1, pixels.Color(0,255,0));
-  pixels.setPixelColor(2, pixels.Color(255,0,0));
-  pixels.setPixelColor(3, pixels.Color(255,0,0));
-  pixels.setPixelColor(4, pixels.Color(175,175,175));
-  pixels.setPixelColor(5, pixels.Color(175,175,175));
-#endif
+
 
   
   Serial.begin(115200);
@@ -97,31 +71,5 @@ void loop() {
   Serial.println("T: "+(String) throttle + "  Y: "+ (String) yaw + "  LM: " + (String) l_motor.readMicroseconds() + "  RM: "+ r_motor.readMicroseconds());
 
 
-/* Strobe pattern
-<framestowait>  <framestowait>  <framestowait>
-          <strobe L>       <strobe R>
---------------||--------------||--------------
-*/
-#ifdef LED_PIN
-  if(framecounter == frames_to_wait || framecounter == frames_to_wait+100){
-    pixels.setPixelColor(0, pixels.Color(255,255,255));
-    pixels.setPixelColor(1, pixels.Color(255,255,255));
-  }else{
-    pixels.setPixelColor(0, pixels.Color(0,255,0));
-    pixels.setPixelColor(1, pixels.Color(0,255,0));    
-  }
 
-  if(framecounter == frames_to_wait*2 || framecounter == (frames_to_wait*2+100)){
-    pixels.setPixelColor(2, pixels.Color(255,255,255));
-    pixels.setPixelColor(3, pixels.Color(255,255,255));
-  }else{
-    pixels.setPixelColor(2, pixels.Color(255,0,0));
-    pixels.setPixelColor(3, pixels.Color(255,0,0));    
-  }
-
-  if(framecounter > frames_to_wait*3){
-    framecounter = 0;
-  }
-#endif
-  
 }
